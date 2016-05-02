@@ -4,9 +4,9 @@ module.exports = {
   entry: './index.js',
 
   output: {
-    path: 'public/js',
+    path: 'public',
     filename: 'bundle.js',
-    publicPath: ''
+    publicPath: 'Users/kellywilson/projects/nyt_stories/public'
   },
   plugins: process.env.NODE_ENV === 'production' ? [
         new webpack.optimize.DedupePlugin(),
@@ -19,4 +19,4 @@ module.exports = {
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader?presets[]=es2015&presets[]=react' }
     ]
   }
-}
+};
