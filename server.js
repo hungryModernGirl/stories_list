@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var compression = require('compression');
 var request = require('axios');
+var utils = require('./modules/utils/content');
 
 var app = express();
 var router = express.Router();
@@ -22,7 +23,7 @@ router.get('/get-stories', function(req, res){
         .get(
             'http://np-ec2-nytimes-com.s3.amazonaws.com/dev/test/nyregion2.js'
         ).then(function(resp) {
-            res.json(resp.data);
+            res.json(utils.parseStories(resp.data));
         }).catch(function(resp) {
             console.log(resp);
         })

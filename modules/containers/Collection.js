@@ -18,9 +18,13 @@ export default React.createClass({
         return (
             <div>
                 Collection
-                {this.state.assets.map(function(a) {
-                    return <Asset asset={a}/>
-                })}
+                <ol>
+                    <li>
+                        {this.state.assets.map(function(a) {
+                            return <Asset asset={a || {}}/>
+                        })}
+                    </li>
+                </ol>
             </div>
         )
     }

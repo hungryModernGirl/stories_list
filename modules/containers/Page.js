@@ -17,7 +17,6 @@ export default React.createClass({
     },
 
     render() {
-        console.log("page");
         return (
             <div>
                 <div>Page</div>

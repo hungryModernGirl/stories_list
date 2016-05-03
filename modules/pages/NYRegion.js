@@ -1,14 +1,15 @@
 import React from 'react'
 import Request from 'axios'
 import Page from '../containers/Page'
-import Section from '../containers/Section'
-
+import Asset from '../content/Asset'
+import utils from '../utils/content'
 
 export default React.createClass({
     getInitialState() {
         return {
+            language: "english",
             meta: {},
-            sections: []
+            content: []
         }
     },
 
@@ -19,9 +20,6 @@ export default React.createClass({
             .get('http://localhost:3000/get-stories')
             .then(function(resp) {
                 that.setupPage(resp.data || {});
-                that.setState({
-                    page: resp.data.page || {}
-                })
             })
             .catch(function(resp) {
                 console.log(resp);
@@ -34,22 +32,35 @@ export default React.createClass({
             newState.meta = data.page.parameters || {};
 
             if (data.page.content) {
-                newState.sections = data.page.content || [];
+                newState.content = data.page.content || [];
             }
         }
         this.setState(newState);
     },
 
+    toggleLanguage(e) {
+        e.preventDefault();
+        this.setState({
+            language: this.state.language == "english" ? "boinga" : "english"
+        })
+    },
+
     render() {
-        console.log("nyregion");
+        var language_message = "Read this page in ";
+        if (this.state.language == "boinga") {
+            language_message = utils.translateToBoinga(language_message);
+        }
         return (
             <div>
-                <div>NYRegion</div>
+                <h1>NYRegion</h1>
+                <a onClick={this.toggleLanguage}>
+                    {language_message} {this.state.language == "english" ? "boinga" : "english"} 
+                </a>
                 <Page meta={this.state.meta || {}}>
-                    {this.state.sections.map(function(s) {
-                        return <Section
-                            key={s.name}
-                            section={s || {}}
+                    {this.state.content.map(function(c) {
+                        return <Asset
+                            key={c.name}
+                            asset={c || {}}
                         />
                     })}
                 </Page>
