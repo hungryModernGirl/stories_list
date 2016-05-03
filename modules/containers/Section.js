@@ -18,8 +18,7 @@ export default React.createClass({
     
     render() {
         return (
-            <div className={this.props.className}>
-                Section
+            <div>
                 {this.state.collections.map(function(c) {
                     return <Collection collection={c}/>
                 })}

@@ -1,14 +1,8 @@
 import React from 'react'
-import Section from './Section'
 
 export default React.createClass({
-    getInitialState() {
-        return {
-            sections: []
-        }
-    },
-
     componentWillMount() {
+        console.log(this.props);
         this.setState({
             title: this.props.meta.title || "",
             description: this.props.meta.description || "",
@@ -16,10 +10,21 @@ export default React.createClass({
         })
     },
 
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
+        this.setState({
+            title: nextProps.meta.title || "",
+            description: nextProps.meta.description || "",
+            template: nextProps.meta.template || ""
+        })
+    },
+
     render() {
+        window.title = this.state.title;
+        console.log("page");
         return (
             <div>
-                <div>Page</div>
+                <h1 className="pageTitle">{this.state.title}</h1>
                 {this.props.children}
             </div>
         )

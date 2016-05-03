@@ -16,10 +16,12 @@
     "compression": "^1.6.1",
     "express": "^4.13.4",
     "if-env": "^1.0.0",
+    "moment": "^2.13.0",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
     "react-router": "^2.0.0",
-    "require-dir": "^0.3.0"
+    "require-dir": "^0.3.0",
+    "string": "^3.3.1"
   },
   "devDependencies": {
     "babel-core": "^6.5.1",

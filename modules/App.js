@@ -4,7 +4,7 @@ import NYRegion from './pages/NYRegion'
 export default React.createClass({
   render() {
     return (
-        <div id="app">
+        <div id="app" className="wrapper">
             <NYRegion/>
             {this.props.children}
         </div>

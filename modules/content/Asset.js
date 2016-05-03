@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router'
+import Moment from 'moment'
 
 var base_image_url = "https://static01.nyt.com/";
 
@@ -12,52 +12,64 @@ export default React.createClass({
             type: this.props.asset.type || "Article",
             published: this.props.asset.publicationDt,
             url: this.props.asset.url || "",
-            image: this.getImage(this.props.asset) || null,
+            image_url: this.getImageUrl(this.props.asset) || null,
+            image_credit: this.getImageCredit(this.props.asset) || null,
             summary: this.props.asset.summary || ""
         });
     },
 
-    getImage(asset) {
+    getImageCredit(asset) {
+        if (asset.images && asset.images.length > 0){
+            return asset.images[0].credit;
+        }
+    },
+
+    getImageUrl(asset) {
         var images = [];
         if (asset.images && asset.images.length > 0  && asset.images[0].types) {
             images = asset.images[0].types.filter(function(i) {
                 return i.type == "articleLarge"
             });
-            console.log(images);
             if (images.length > 0 && images[0]){
                 var url = base_image_url + images[0].content;
-                console.log(url);
                 return url
             }
         }
     },
 
     renderImage() {
-        if (this.state.image) {
+        if (this.state.image_url) {
             return (
-                <div className="media photo">
+                <div className="photo">
                     <a href={this.state.url}>
-                        <img src={this.state.image}/>
+                        <img src={this.state.image_url}/>
                     </a>
+                    <div className="byline">
+                        {this.state.image_credit}
+                    </div>
                 </div>
             )
         }
     },
 
     render() {
-        console.log("asset");
-        console.log(this.state);
         var image_el = this.renderImage();
+        var how_recent = Moment().to(Moment(this.state.published));
+        var className = "article-body" + (this.state.image_url ? "": " no-pic");
         return (
-            <div>
+            <div className={className}>
                 {image_el}
-                <div className="article-body">
-                    <div className="thumb"></div>
+                <div>
+                    <a href={this.state.url}>
+                        <div className="headline">
+                            {this.state.headline}
+                        </div>
+                    </a>
                     <p className="summary">
                         {this.state.summary}
                     </p>
                     <p className="byline">
-                        {this.state.published} {this.state.byline}
+                        {how_recent} {this.state.byline}
                     </p>
                 </div>
             </div>

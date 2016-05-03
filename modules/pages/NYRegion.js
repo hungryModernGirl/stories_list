@@ -29,7 +29,7 @@ export default React.createClass({
     setupPage(data) {
         var newState = {};
         if (data.page) {
-            newState.meta = data.page.parameters || {};
+            newState.meta = data.page.meta || {};
 
             if (data.page.content) {
                 newState.content = data.page.content || [];
@@ -50,13 +50,15 @@ export default React.createClass({
         if (this.state.language == "boinga") {
             language_message = utils.translateToBoinga(language_message);
         }
+        console.log(this.state.meta);
         return (
             <div>
-                <h1>NYRegion</h1>
                 <a onClick={this.toggleLanguage}>
                     {language_message} {this.state.language == "english" ? "boinga" : "english"} 
                 </a>
-                <Page meta={this.state.meta || {}}>
+                <Page
+                    meta={this.state.meta}
+                >
                     {this.state.content.map(function(c) {
                         return <Asset
                             key={c.name}
