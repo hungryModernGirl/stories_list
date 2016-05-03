@@ -14,16 +14,30 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // send all requests to index.html so browserHistory in React Router works
 router.all('/', function (req, res, next) {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-    next();
+    if (req.method == 'GET') {
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+        next();
+    }
+    else {
+        res.status(403).send("Method is Forbidden");
+    }
 });
 
-router.get('/get-stories', function(req, res){
+router.get('/get-stories/:page', function(req, res){
+    var page = req.params.page;
+    var url = page == 1 ?
+        'http://np-ec2-nytimes-com.s3.amazonaws.com/dev/test/nyregion2.js' :
+        'http://np-ec2-nytimes-com.s3.amazonaws.com/dev/test/nyregion.js';
     request
         .get(
-            'http://np-ec2-nytimes-com.s3.amazonaws.com/dev/test/nyregion2.js'
+            url
         ).then(function(resp) {
-            res.json(utils.parseStories(resp.data));
+            if (page == 1) {
+                res.json(utils.parseStories(resp.data));
+            }
+            else {
+                res.jsonp(utils.parseStories(resp.data));
+            }
         }).catch(function(resp) {
             console.log(resp);
         })

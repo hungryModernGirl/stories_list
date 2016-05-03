@@ -9,21 +9,28 @@ export default React.createClass({
         return {
             language: "english",
             meta: {},
-            content: []
+            content: [],
+            page: 0
         }
     },
 
     componentDidMount() {
-        console.log('err');
-        var that = this;
+        this.getStories(this.setupPage);
+    },
+
+    getStories(callback) {
         Request
-            .get('http://localhost:3000/get-stories')
+            .get('http://localhost:3000/get-stories/' + (this.state.page + 1))
             .then(function(resp) {
-                that.setupPage(resp.data || {});
+                callback(resp.data || {});
             })
             .catch(function(resp) {
                 console.log(resp);
             });
+        // if load_more working
+        // this.setState({
+        //     page: this.state.page + 1
+        // })
     },
 
     setupPage(data) {
@@ -45,17 +52,35 @@ export default React.createClass({
         })
     },
 
+    handleLoadMore(e) {
+        e.preventDefault();
+        var that = this;
+        var cb = function(data){that.setState({
+            content: that.state.content.concat(data.page.content)
+        })};
+        this.getStories(cb);
+    },
+
     render() {
         var language_message = "Read this page in ";
+        // var load_more_el = "";
         if (this.state.language == "boinga") {
             language_message = utils.translateToBoinga(language_message);
         }
-        console.log(this.state.meta);
+        // if boinga translation working use:
+        // <a className="language" onClick={this.toggleLanguage}>
+        //     {language_message} {this.state.language == "english" ? "boinga" : "english"}
+        // </a>
+
+        // if load_more working use:
+        // if (this.state.page < 2){
+        //     load_more_el = (<a
+        //         className="load-more"
+        //         onClick={this.handleLoadMore}
+        //     >Load More</a>);
+        // }
         return (
-            <div>
-                <a onClick={this.toggleLanguage}>
-                    {language_message} {this.state.language == "english" ? "boinga" : "english"} 
-                </a>
+            <div id="NYRegion">
                 <Page
                     meta={this.state.meta}
                 >

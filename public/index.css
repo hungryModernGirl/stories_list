@@ -11,12 +11,24 @@ a:hover {
     color: #000;
 }
 
+img {
+    width: 100%;
+    height: auto;
+}
+
 .wrapper {
-    display: grid;
+    width: 90%;
 }
 
 .active {
     color: green;
+}
+
+.language {
+    float: right;
+    margin-right: 5px;
+    text-align: right;
+    width: 100px;
 }
 
 .pageTitle {
@@ -29,15 +41,12 @@ a:hover {
     width: 90%;
     margin: 0 0 20px 10px;
     border-bottom: 1px solid #ccc;
+    padding: 10px;
 }
 
 .byline {
     text-align: left;
     color: #666;
-}
-
-.photo {
-    display: none;
 }
 
 .headline , .headline a{
@@ -49,15 +58,24 @@ a:hover {
     font-size: 1em;
 }
 
+.load-more {
+    text-align: center;
+    float: left;
+    clear:both;
+    margin: 0 47% 40px;
+    text-transform: uppercase;
+}
+
 #app {
     margin: 0 30px 0 30px;
 }
 
 @media screen and (min-width: 660px) {
     .article-body {
-        width: 600px;
+        width: 40%;
         margin: 0 0 20px 15px;
         border-bottom: 1px solid #ccc;
+        float: left;
     }
 
     .byline {
@@ -65,22 +83,17 @@ a:hover {
         color: #666;
     }
 
-    .photo {
-        display: block;
-        width: 100%;
+    .language {
+        width: 200px;
     }
+
 }
 
 @media screen and (min-width: 1300px) {
     .article-body {
-        width: 600px;
         height: 600px;
         margin: 0 10px 20px 15px;
-        border-bottom: 1px solid #ccc;
         float: left;
     }
 
-    .no-pic {
-        height: 300px;
-    }
 }
