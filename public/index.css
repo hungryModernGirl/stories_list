@@ -18,6 +18,7 @@ img {
 
 .wrapper {
     width: 90%;
+    margin: 0 5%;
 }
 
 .active {
@@ -66,14 +67,12 @@ img {
     text-transform: uppercase;
 }
 
-#app {
-    margin: 0 30px 0 30px;
-}
-
 @media screen and (min-width: 660px) {
     .article-body {
-        width: 40%;
-        margin: 0 0 20px 15px;
+        height: 600px;
+        width: 46%;
+        margin: 0 1%;
+        padding: 1% 1%;
         border-bottom: 1px solid #ccc;
         float: left;
     }
@@ -85,15 +84,6 @@ img {
 
     .language {
         width: 200px;
-    }
-
-}
-
-@media screen and (min-width: 1300px) {
-    .article-body {
-        height: 600px;
-        margin: 0 10px 20px 15px;
-        float: left;
     }
 
 }
