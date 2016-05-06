@@ -1,8 +1,6 @@
 import React from 'react'
 import Moment from 'moment'
 
-var base_image_url = "https://static01.nyt.com/";
-
 export default React.createClass({
 
     componentWillMount() {
@@ -12,29 +10,23 @@ export default React.createClass({
             type: this.props.asset.type || "Article",
             published: this.props.asset.publicationDt,
             url: this.props.asset.url || "",
-            image_url: this.getImageUrl(this.props.asset) || null,
-            image_credit: this.getImageCredit(this.props.asset) || null,
+            image_url: this.props.asset.image_url,
+            image_credit: this.props.asset.image_credit,
             summary: this.props.asset.summary || ""
         });
     },
 
-    getImageCredit(asset) {
-        if (asset.images && asset.images.length > 0){
-            return asset.images[0].credit;
-        }
-    },
-
-    getImageUrl(asset) {
-        var images = [];
-        if (asset.images && asset.images.length > 0  && asset.images[0].types) {
-            images = asset.images[0].types.filter(function(i) {
-                return i.type == "articleLarge"
-            });
-            if (images.length > 0 && images[0]){
-                var url = base_image_url + images[0].content;
-                return url
-            }
-        }
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            headline: nextProps.asset.headline || "",
+            byline: nextProps.asset.byline || "",
+            type: nextProps.asset.type || "Article",
+            published: nextProps.asset.publicationDt,
+            url: nextProps.asset.url || "",
+            image_url: nextProps.asset.image_url,
+            image_credit: nextProps.asset.image_credit,
+            summary: nextProps.asset.summary || ""
+        });
     },
 
     renderImage() {

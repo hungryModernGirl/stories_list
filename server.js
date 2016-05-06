@@ -23,8 +23,9 @@ router.all('/', function (req, res, next) {
     }
 });
 
-router.get('/get-stories/:page', function(req, res){
+router.get('/get-stories/:page/:language', function(req, res){
     var page = req.params.page;
+    var language = req.params.language;
     var url = page == 1 ?
         'http://np-ec2-nytimes-com.s3.amazonaws.com/dev/test/nyregion2.js' :
         'http://np-ec2-nytimes-com.s3.amazonaws.com/dev/test/nyregion.js';
@@ -33,10 +34,10 @@ router.get('/get-stories/:page', function(req, res){
             url
         ).then(function(resp) {
             if (page == 1) {
-                res.json(utils.parseStories(resp.data));
+                res.json(utils.parseStories(resp.data, language));
             }
             else {
-                res.jsonp(utils.parseStories(resp.data));
+                res.jsonp(utils.parseStories(resp.data, language));
             }
         }).catch(function(resp) {
             console.log(resp);

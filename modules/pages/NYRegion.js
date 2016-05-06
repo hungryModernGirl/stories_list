@@ -2,7 +2,7 @@ import React from 'react'
 import Request from 'axios'
 import Page from '../containers/Page'
 import Asset from '../content/Asset'
-import utils from '../utils/content'
+import Translate from '../utils/translate'
 
 export default React.createClass({
     getInitialState() {
@@ -15,12 +15,16 @@ export default React.createClass({
     },
 
     componentDidMount() {
-        this.getStories(this.setupPage);
+        this.getStories(this.state.language, this.setupPage);
     },
 
-    getStories(callback) {
+    componentWillUpdate(nextProps, nextState) {
+    },
+
+    getStories(language, callback) {
+        console.log(language);
         Request
-            .get('http://localhost:3000/get-stories/' + (this.state.page + 1))
+            .get('http://localhost:3000/get-stories/' + (this.state.page + 1) + '/' + language)
             .then(function(resp) {
                 callback(resp.data || {});
             })
@@ -39,6 +43,7 @@ export default React.createClass({
             newState.meta = data.page.meta || {};
 
             if (data.page.content) {
+                console.log(data.page.content[0]);
                 newState.content = data.page.content || [];
             }
         }
@@ -47,9 +52,11 @@ export default React.createClass({
 
     toggleLanguage(e) {
         e.preventDefault();
+        var new_lang = this.state.language == "english" ? "boinga" : "english";
         this.setState({
-            language: this.state.language == "english" ? "boinga" : "english"
-        })
+            language: new_lang
+        });
+        this.getStories(new_lang, this.setupPage);
     },
 
     handleLoadMore(e) {
@@ -63,14 +70,10 @@ export default React.createClass({
 
     render() {
         var language_message = "Read this page in ";
-        // var load_more_el = "";
+        var load_more_el = "";
         if (this.state.language == "boinga") {
-            language_message = utils.translateToBoinga(language_message);
+            language_message = Translate.translateToBoinga(language_message);
         }
-        // if boinga translation working use:
-        // <a className="language" onClick={this.toggleLanguage}>
-        //     {language_message} {this.state.language == "english" ? "boinga" : "english"}
-        // </a>
 
         // if load_more working use:
         // if (this.state.page < 2){
@@ -81,6 +84,9 @@ export default React.createClass({
         // }
         return (
             <div id="NYRegion">
+                <a className="language" onClick={this.toggleLanguage}>
+                    {language_message} {this.state.language == "english" ? "boinga" : "english"}
+                </a>
                 <Page
                     meta={this.state.meta}
                 >

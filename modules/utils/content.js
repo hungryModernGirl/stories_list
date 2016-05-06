@@ -1,8 +1,14 @@
-var S = require('string');
+var Translate = require('./translate');
+
+
+const ARTICLE_TRANSLATE_FIELDS = ['headline', 'summary', 'byline', 'image_credit'];
+const META_TRANSLATE_FIELDS = ['description', 'title'];
+
+const base_image_url = "https://static01.nyt.com/";
 
 module.exports = {
-    parseStories: function(data) {
-        results = {
+    parseStories: function(data, language) {
+        var results = {
             page: {
                 meta: data.page.parameters,
                 content: []
@@ -13,7 +19,38 @@ module.exports = {
                 this.flattenContent(data.page.content[i])
             );
         }
+
+        if (language == "english") {
+            return results;
+        }
+        else if (language == "boinga") {
+            return this.parseInBoinga(results);
+        }
+
         return results
+    },
+
+    parseInBoinga: function(data) {
+        if (data.page.meta) {
+            for (var i = 0; i < Object.keys(data.page.meta).length; i++) {
+                var key = Object.keys(data.page.meta)[i];
+                if (META_TRANSLATE_FIELDS.indexOf(key) > -1) {
+                    data.page.meta[key] = Translate.translateToBoinga(data.page.meta[key]);
+                }
+            }
+        }
+        if (data.page.content) {
+            for (i = 0; i < data.page.content.length; i++) {
+                for (var j = 0; j < Object.keys(data.page.content[i]).length; j++) {
+                    key = Object.keys(data.page.content[i])[j];
+                    if (ARTICLE_TRANSLATE_FIELDS.indexOf(key) > -1) {
+                        data.page.content[i][key] = Translate.translateToBoinga(data.page.content[i][key]);
+                    }
+                }
+            }
+        }
+
+        return data;
     },
 
     flattenContent: function(section) {
@@ -27,170 +64,43 @@ module.exports = {
     },
 
     filterArticles: function(collection) {
-        return collection.assets.filter(function(asset) {
+        var assets = collection.assets.filter(function(asset) {
             return asset.type == "Article"
         });
+        for (var i=0; i<assets.length; i++) {
+            assets[i] = this.flattenArticle(assets[i]);
+        }
+        
+        return assets;
     },
 
-    prefixPunctuation: function(text) {
-        var results = {
-            text: text,
-            punctuation: ""
+    flattenArticle: function(article) {
+        var that = this;
+        return {
+            headline: article.headline || "",
+            byline: article.byline || "",
+            published: article.publicationDt,
+            url: article.url || "",
+            image_url: that.getImageUrl(article) || null,
+            image_credit: that.getImageCredit(article) || null,
+            summary: article.summary || ""
         };
-        for (var i=0; i<text.length; i++) {
-            if (text.charAt(i).isAlpha) {
-                results.text = text.slice(i);
-                break;
-            }
-            else {
-                results.punctuation += text.charAt(i);
-            }
-        }
-        return results;
     },
 
-    suffixPunctuation: function(text) {
-        var results = {
-            text: text,
-            punctuation: ""
-        };
-        for (var i=text.length-1; i==0; i--) {
-            if (text.charAt(i).isAlpha) {
-                results.text = text.slice(0, i);
-                break;
-            }
-            else {
-                results.punctuation = text.charAt(i) + results.punctuation;
-            }
+    getImageCredit: function(asset) {
+        if (asset.images && asset.images.length > 0){
+            return asset.images[0].credit;
         }
-        return results;
     },
 
-    // bodyPunctuation: function(text) {
-    //     var results = {
-    //         punctuation: {},
-    //         text: text
-    //     };
-    //     for (var i=0; i<text.length; i++){
-    //         if (text.charAt(i).isAlphaNumeric()){
-    //             continue;
-    //         }
-    //         if (results.punctuation[text.charAt(i)]){
-    //             results.punctuation[text.charAt(i)].push(i);
-    //         }
-    //         else {
-    //             results.punctuation[text.charAt(i)] = [i];
-    //         }
-    //     }
-    //     results.text = text.replace(/[\W_]+/g,"");
-    //     return results;
-    // },
-
-    trimPunctuation: function(text) {
-        var results = {
-            prefix: "",
-            suffix: "",
-            text: text
-        };
-        var prefix_info = this.prefixPunctuation(text);
-        results.prefix = prefix_info.punctuation;
-        text = prefix_info.text;
-
-        var suffix_info = this.suffixPunctuation(text);
-        results.suffix = suffix_info.punctuation;
-        results.text = suffix_info.text;
-
-        return results;
-    },
-
-    // retainCase: function(text) {
-    //     var results = [];
-    //     for (var i=0; i<text.length; i++) {
-    //         if (text.charAt(i).isUpper()) {
-    //             results.push(i);
-    //         }
-    //     }
-    //     return results;
-    // },
-
-    inlineSwapWord: function(text, key) {
-        // preserves punctuation && case
-
-        var replace_with = key.charAt(0);
-        for (var i=0; i<text.length; i++) {
-            if (key == "") {
-                // handles case of more punctuation than length of key
-                // ie. text = "w.h.a.t.i.s.t.h.i.s" && key = "boinga"
-                // result =   "b.o.i.n.g.a...." to preserve all punctuation
-                if (text.charAt(i).isAlphaNumeric()) {
-                    // if index used in slice is out of range it returns ""
-                    text = text.slice(0, i) + text.slice(i + 1);
-                }
-                // implicit else condition that text.charAt(i) is punctuation
-                // which we don't want to change
-            }
-            else {
-                if (text.charAt(i).isAlphaNumeric()) {
-                    replace_with = key.charAt(0);
-                    if (text.charAt(i).isUpper()) {
-                        replace_with = replace_with.toUpperCase();
-                    }
-                    text = text.slice(0, i) + replace_with + text.slice(i + 1);
-
-                    // remove first char of key
-                    key = key.slice(1);
-                }
-                // implicit else condition that text.charAt(i) is punctuation
-                // which we don't want to change
-            }
-        }
-        if (key != "") {
-            // case that key is longer than text
-            text += key;
-        }
-
-        return text;
-    },
-
-    translateToBoinga: function(text) {
-        var text_arr = text.split(" ");
-        var key = S("boinga");
-        for (var i=0; i<text_arr.length; i++) {
-            var word = S(text_arr[i]);
-            if (word.length > 3) {
-                // preserve punctuation
-                var trim_punc = this.trimPunctuation(word);
-                word = S(trim_punc.text);
-
-                // preserve case
-                var retain_case = this.retainCase(word);
-
-                word = key;
-
-                // apply case
-                for (var c=0; c<retain_case.length; c++) {
-                    if (retain_case[c] >= word.length) {
-                        break;
-                    }
-                    else {
-                        word = word.slice(0, c) +
-                            word.charAt(c).toUpperCase() +
-                            word.slice(c+1);
-                    }
-                }
-                for (var p=0; p<retain_punc.body.keys.length; p++) {
-                    for (var p_i=0; p_i<retain_punc.body.p.length; p_i++) {
-                        if (retain_punc.body.p[p_i] >= word.length) {
-                            break;
-                        }
-                        else {
-                            word = word.substring(0, retain_punc.body.p[p_i]) +
-                                    retain_punc.body.keys[p] +
-                                    word.substring(retain_punc.body.p[p_i]);
-                        }
-                    }
-                }
-                word
+    getImageUrl: function(asset) {
+        var images = [];
+        if (asset.images && asset.images.length > 0  && asset.images[0].types) {
+            images = asset.images[0].types.filter(function(i) {
+                return i.type == "articleLarge"
+            });
+            if (images.length > 0 && images[0]){
+                return base_image_url + images[0].content;
             }
         }
     }
