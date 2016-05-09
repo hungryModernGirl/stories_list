@@ -17,8 +17,10 @@ Important points of use:
 
 Currently, this is a single page site that renders
 articles from the New York Times relevant to the New York
-region.
+region. You can read the page in either English or Boinga,
+and more stories can be loaded.
 
-Aspects attempted but not complete:
-- translating to Boinga
-- loading more stories via JSONP object
+
+Want to change in the future:
+- incorporate flux or redux in implementation
+- remove all use of jquery
