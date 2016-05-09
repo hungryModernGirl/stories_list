@@ -3,7 +3,6 @@ var path = require('path');
 var compression = require('compression');
 var request = require('axios');
 var utils = require('./modules/utils/content');
-var jsonp = require('jsonp-express');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 
@@ -17,7 +16,6 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true})); // for parsing 
 // serve our static stuff like index.css
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use(jsonp);
 
 app.post('/more-stories', function(req, res, next) {
     var data = JSON.parse(req.body.data);
