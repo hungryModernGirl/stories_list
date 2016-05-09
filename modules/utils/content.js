@@ -1,7 +1,6 @@
 var Translate = require('./translate');
 
-
-const ARTICLE_TRANSLATE_FIELDS = ['headline', 'summary', 'byline', 'image_credit'];
+const ARTICLE_TRANSLATE_FIELDS = ['headline', 'summary', 'image_credit'];
 const META_TRANSLATE_FIELDS = ['description', 'title'];
 
 const base_image_url = "https://static01.nyt.com/";
@@ -24,13 +23,13 @@ module.exports = {
             return results;
         }
         else if (language == "boinga") {
-            return this.parseInBoinga(results);
+            return this.translatePageToBoinga(results);
         }
 
         return results
     },
 
-    parseInBoinga: function(data) {
+    translatePageToBoinga: function(data) {
         if (data.page.meta) {
             for (var i = 0; i < Object.keys(data.page.meta).length; i++) {
                 var key = Object.keys(data.page.meta)[i];

@@ -3,17 +3,35 @@ var path = require('path');
 var compression = require('compression');
 var request = require('axios');
 var utils = require('./modules/utils/content');
+var jsonp = require('jsonp-express');
+var bodyParser = require('body-parser');
+var multer = require('multer');
 
 var app = express();
-var router = express.Router();
-app.use(router);
+// var router = express.Router();
+// app.use(router);
 app.use(compression());
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true})); // for parsing application/x-www-form-urlencoded
 
 // serve our static stuff like index.css
 app.use(express.static(path.join(__dirname, 'public')));
 
+// app.use(jsonp);
+
+app.post('/more-stories', function(req, res, next) {
+    var data = JSON.parse(req.body.data);
+    var language = req.body.language;
+    res.json(utils.parseStories(data, language));
+});
+
+app.post('/translate-boinga', function(req, res, next) {
+    var data = JSON.parse(req.body.data);
+    res.json(utils.translatePageToBoinga(data))
+});
+
 // send all requests to index.html so browserHistory in React Router works
-router.all('/', function (req, res, next) {
+app.all('/', function (req, res, next) {
     if (req.method == 'GET') {
         res.sendFile(path.join(__dirname, 'public', 'index.html'));
         next();
@@ -23,26 +41,19 @@ router.all('/', function (req, res, next) {
     }
 });
 
-router.get('/get-stories/:page/:language', function(req, res){
-    var page = req.params.page;
+app.get('/get-stories/:language', function(req, res) {
     var language = req.params.language;
-    var url = page == 1 ?
-        'http://np-ec2-nytimes-com.s3.amazonaws.com/dev/test/nyregion2.js' :
-        'http://np-ec2-nytimes-com.s3.amazonaws.com/dev/test/nyregion.js';
+    var url = 'http://np-ec2-nytimes-com.s3.amazonaws.com/dev/test/nyregion2.js';
     request
         .get(
             url
         ).then(function(resp) {
-            if (page == 1) {
-                res.json(utils.parseStories(resp.data, language));
-            }
-            else {
-                res.jsonp(utils.parseStories(resp.data, language));
-            }
-        }).catch(function(resp) {
-            console.log(resp);
-        })
+        res.json(utils.parseStories(resp.data, language));
+    }).catch(function(resp) {
+        console.log(resp);
+    })
 });
+
 
 var PORT = process.env.PORT || 3000;
 app.listen(PORT, function() {

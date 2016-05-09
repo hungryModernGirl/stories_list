@@ -10,11 +10,13 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.11.0",
+    "body-parser": "^1.15.1",
     "change-case": "^2.3.1",
     "compression": "^1.6.1",
     "express": "^4.13.4",
     "if-env": "^1.0.0",
     "moment": "^2.13.0",
+    "multer": "^1.1.0",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
     "react-router": "^2.0.0",

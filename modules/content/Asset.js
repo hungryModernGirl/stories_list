@@ -8,7 +8,7 @@ export default React.createClass({
             headline: this.props.asset.headline || "",
             byline: this.props.asset.byline || "",
             type: this.props.asset.type || "Article",
-            published: this.props.asset.publicationDt,
+            published: this.props.asset.published,
             url: this.props.asset.url || "",
             image_url: this.props.asset.image_url,
             image_credit: this.props.asset.image_credit,
@@ -21,7 +21,7 @@ export default React.createClass({
             headline: nextProps.asset.headline || "",
             byline: nextProps.asset.byline || "",
             type: nextProps.asset.type || "Article",
-            published: nextProps.asset.publicationDt,
+            published: nextProps.asset.published,
             url: nextProps.asset.url || "",
             image_url: nextProps.asset.image_url,
             image_credit: nextProps.asset.image_credit,
@@ -61,7 +61,7 @@ export default React.createClass({
                         {this.state.summary}
                     </p>
                     <p className="byline">
-                        {how_recent} {this.state.byline}
+                        {how_recent} | {this.state.byline}
                     </p>
                 </div>
             </div>

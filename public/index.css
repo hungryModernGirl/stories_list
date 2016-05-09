@@ -30,6 +30,7 @@ img {
     margin-right: 5px;
     text-align: right;
     width: 100px;
+    text-transform: capitalize;
 }
 
 .pageTitle {
